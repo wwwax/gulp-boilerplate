@@ -10,6 +10,7 @@ const group_media = require("gulp-group-css-media-queries");
 const autoprefixer = require("gulp-autoprefixer");
 const clean_css = require("gulp-clean-css");
 const rename = require("gulp-rename");
+const uglify = require("gulp-uglify-es").default;
 
 function browserSync() {
   browser_sync.init({
@@ -54,7 +55,21 @@ function css() {
         extname: ".min.css",
       })
     )
-    .pipe(dest("dist/assets/css"))
+    .pipe(dest("dist/assets/css/"))
+    .pipe(browser_sync.stream());
+}
+
+function js() {
+  return src("src/assets/js/main.js")
+    .pipe(file_include())
+    .pipe(dest("dist/assets/js/"))
+    .pipe(uglify())
+    .pipe(
+      rename({
+        extname: ".min.js",
+      })
+    )
+    .pipe(dest("dist/assets/js/"))
     .pipe(browser_sync.stream());
 }
 
@@ -71,13 +86,15 @@ function images() {
 function watchFiles() {
   gulp.watch(["src/**/*.html"], html);
   gulp.watch(["src/assets/scss/**/*.scss"], css);
+  gulp.watch(["src/assets/js/**/*.js"], js);
 }
 
-const build = gulp.series(clean, gulp.parallel(html, css, images));
+const build = gulp.series(clean, gulp.parallel(html, css, js, images));
 const watch = gulp.parallel(build, watchFiles, browserSync);
 
 exports.html = html;
 exports.css = css;
+exports.js = js;
 exports.images = images;
 exports.clean = clean;
 
