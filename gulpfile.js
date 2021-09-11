@@ -11,6 +11,8 @@ const autoprefixer = require("gulp-autoprefixer");
 const clean_css = require("gulp-clean-css");
 const rename = require("gulp-rename");
 const uglify = require("gulp-uglify-es").default;
+const imagemin = require("gulp-imagemin");
+const webpcss = require("gulp-webpcss");
 
 function browserSync() {
   browser_sync.init({
@@ -48,6 +50,7 @@ function css() {
         cascade: true,
       })
     )
+    .pipe(webpcss())
     .pipe(dest("dist/assets/css"))
     .pipe(clean_css())
     .pipe(
@@ -74,13 +77,24 @@ function js() {
 }
 
 function images() {
-  return src("src/assets/img/**/*.{jpg,png}")
+  return src("src/assets/img/**/*.{jpg,png,svg,gif,ico,webp}")
     .pipe(
       webp({
         quality: 70,
       })
     )
-    .pipe(dest("dist/assets/img/"));
+    .pipe(dest("dist/assets/img/"))
+    .pipe(src("src/assets/img/**/*.{jpg,png,svg,gif,ico,webp}"))
+    .pipe(
+      imagemin({
+        progressive: true,
+        svgoPlugins: [{ removeViewBox: false }],
+        interlaced: true,
+        optimizationLevel: 3, // from 0 to 7
+      })
+    )
+    .pipe(dest("dist/assets/img"))
+    .pipe(browser_sync.stream());
 }
 
 function watchFiles() {
