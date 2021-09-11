@@ -101,6 +101,7 @@ function watchFiles() {
   gulp.watch(["src/**/*.html"], html);
   gulp.watch(["src/assets/scss/**/*.scss"], css);
   gulp.watch(["src/assets/js/**/*.js"], js);
+  gulp.watch(["src/assets/img/**/*.{jpg,png,svg,gif,ico,webp}"]);
 }
 
 const build = gulp.series(clean, gulp.parallel(html, css, js, images));
