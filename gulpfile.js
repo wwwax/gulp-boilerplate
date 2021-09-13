@@ -13,6 +13,7 @@ const rename = require("gulp-rename");
 const uglify = require("gulp-uglify-es").default;
 const imagemin = require("gulp-imagemin");
 const webpcss = require("gulp-webpcss");
+const svgSprite = require("gulp-svg-sprite");
 
 function browserSync() {
   browser_sync.init({
@@ -96,6 +97,21 @@ function images() {
     .pipe(dest("dist/assets/img"))
     .pipe(browser_sync.stream());
 }
+
+gulp.task("sprite", function () {
+  return src("src/assets/iconsprite/*.svg")
+    .pipe(
+      svgSprite({
+        mode: {
+          stack: {
+            sprite: "../icons/icons.svg",
+            example: false,
+          },
+        },
+      })
+    )
+    .pipe(dest("dist/assets/img"));
+});
 
 function watchFiles() {
   gulp.watch(["src/**/*.html"], html);

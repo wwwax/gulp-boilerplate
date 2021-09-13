@@ -1,0 +1,24 @@
+.svg-france-dims {
+  width: 64px;
+  height: 64px;
+
+  @media (min-width: 768px) {
+    width: 256px;
+    height: 256px;
+  }
+}
+
+.svg-germany-dims {
+  width: 128px;
+  height: 128px;
+}
+
+.svg-uk-dims {
+  width: 256px;
+  height: 256px;
+
+  @media (min-width: 768px) {
+    width: 64px;
+    height: 64px;
+  }
+}
