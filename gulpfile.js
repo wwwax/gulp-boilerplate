@@ -2,8 +2,8 @@ const { src, dest } = require("gulp");
 const gulp = require("gulp");
 const browser_sync = require("browser-sync").create();
 const del = require("del");
-const webp = require("gulp-webp");
-const webphtml = require("gulp-webp-html");
+// const webp = require("gulp-webp");
+// const webphtml = require("gulp-webp-html");
 const file_include = require("gulp-file-include");
 const scss = require("gulp-sass")(require("sass"));
 const group_media = require("gulp-group-css-media-queries");
@@ -12,7 +12,7 @@ const clean_css = require("gulp-clean-css");
 const rename = require("gulp-rename");
 const uglify = require("gulp-uglify-es").default;
 const imagemin = require("gulp-imagemin");
-const webpcss = require("gulp-webpcss");
+// const webpcss = require("gulp-webpcss");
 const svgSprite = require("gulp-svg-sprite");
 
 function browserSync() {
@@ -30,37 +30,41 @@ function clean() {
 }
 
 function html() {
-  return src(["src/*.html", "!src/_*.html"])
-    .pipe(file_include())
-    .pipe(webphtml())
-    .pipe(dest("dist/"))
-    .pipe(browser_sync.stream());
+  return (
+    src(["src/*.html", "!src/_*.html"])
+      .pipe(file_include())
+      // .pipe(webphtml())
+      .pipe(dest("dist/"))
+      .pipe(browser_sync.stream())
+  );
 }
 
 function css() {
-  return src("src/assets/scss/main.scss")
-    .pipe(
-      scss({
-        outputStyle: "expanded",
-      }).on("error", scss.logError)
-    )
-    .pipe(group_media())
-    .pipe(
-      autoprefixer({
-        overrideBrowserslist: ["last 5 versions"],
-        cascade: true,
-      })
-    )
-    .pipe(webpcss())
-    .pipe(dest("dist/assets/css"))
-    .pipe(clean_css())
-    .pipe(
-      rename({
-        extname: ".min.css",
-      })
-    )
-    .pipe(dest("dist/assets/css/"))
-    .pipe(browser_sync.stream());
+  return (
+    src("src/assets/scss/main.scss")
+      .pipe(
+        scss({
+          outputStyle: "expanded",
+        }).on("error", scss.logError)
+      )
+      .pipe(group_media())
+      .pipe(
+        autoprefixer({
+          overrideBrowserslist: ["last 5 versions"],
+          cascade: true,
+        })
+      )
+      // .pipe(webpcss())
+      .pipe(dest("dist/assets/css"))
+      .pipe(clean_css())
+      .pipe(
+        rename({
+          extname: ".min.css",
+        })
+      )
+      .pipe(dest("dist/assets/css/"))
+      .pipe(browser_sync.stream())
+  );
 }
 
 function js() {
@@ -78,14 +82,16 @@ function js() {
 }
 
 function images() {
+  // return src("src/assets/img/**/*.{jpg,png,svg,gif,ico,webp}")
+  //   .pipe(
+  //     webp({
+  //       quality: 70,
+  //     })
+  //   )
+  //   .pipe(dest("dist/assets/img/"))
+
   return src("src/assets/img/**/*.{jpg,png,svg,gif,ico,webp}")
-    .pipe(
-      webp({
-        quality: 70,
-      })
-    )
-    .pipe(dest("dist/assets/img/"))
-    .pipe(src("src/assets/img/**/*.{jpg,png,svg,gif,ico,webp}"))
+    // .pipe(src("src/assets/img/**/*.{jpg,png,svg,gif,ico,webp}"))
     .pipe(
       imagemin({
         progressive: true,
@@ -110,7 +116,7 @@ gulp.task("sprite", function () {
         },
       })
     )
-    .pipe(dest("dist/assets/img"));
+    .pipe(dest("src/assets/img"));
 });
 
 function watchFiles() {
