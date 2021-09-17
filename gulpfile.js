@@ -1,3 +1,38 @@
+// ==============
+// ==== PATH ====
+// ==============
+
+const source_folder = "src";
+const project_folder = "dist";
+
+const path = {
+  src: {
+    html: [source_folder + "/*.html", "!" + source_folder + "/_*.html"],
+    css: source_folder + "/assets/scss/main.scss",
+    js: source_folder + "/assets/js/main.js",
+    img: source_folder + "/assets/img/**/*.{jpg,png,svg,gif,ico,webp}",
+    fonts: source_folder + "/assets/fonts/*.ttf",
+  },
+  build: {
+    html: project_folder + "/",
+    css: project_folder + "/assets/css/",
+    js: project_folder + "/assets/js/",
+    img: project_folder + "/assets/img/",
+    fonts: project_folder + "/assets/fonts/",
+  },
+  watch: {
+    html: source_folder + "/**/*.html",
+    css: source_folder + "/assets/scss/**/*.scss",
+    js: source_folder + "/assets/js/**/*.js",
+    img: source_folder + "/assets/img/**/*.{jpg,png,svg,gif,ico,webp}",
+  },
+  del: "",
+};
+
+// =================
+// ==== IMPORTS ====
+// =================
+
 const { src, dest } = require("gulp");
 const gulp = require("gulp");
 const browser_sync = require("browser-sync").create();
@@ -31,17 +66,17 @@ function clean() {
 
 function html() {
   return (
-    src(["src/*.html", "!src/_*.html"])
+    src(path.src.html)
       .pipe(file_include())
       // .pipe(webphtml())
-      .pipe(dest("dist/"))
+      .pipe(dest(path.build.html))
       .pipe(browser_sync.stream())
   );
 }
 
 function css() {
   return (
-    src("src/assets/scss/main.scss")
+    src(path.src.css)
       .pipe(
         scss({
           outputStyle: "expanded",
@@ -55,29 +90,29 @@ function css() {
         })
       )
       // .pipe(webpcss())
-      .pipe(dest("dist/assets/css"))
+      .pipe(dest(path.build.css))
       .pipe(clean_css())
       .pipe(
         rename({
           extname: ".min.css",
         })
       )
-      .pipe(dest("dist/assets/css/"))
+      .pipe(dest(path.build.css))
       .pipe(browser_sync.stream())
   );
 }
 
 function js() {
-  return src("src/assets/js/main.js")
+  return src(path.src.js)
     .pipe(file_include())
-    .pipe(dest("dist/assets/js/"))
+    .pipe(dest(path.build.js))
     .pipe(uglify())
     .pipe(
       rename({
         extname: ".min.js",
       })
     )
-    .pipe(dest("dist/assets/js/"))
+    .pipe(dest(path.build.js))
     .pipe(browser_sync.stream());
 }
 
@@ -90,18 +125,20 @@ function images() {
   //   )
   //   .pipe(dest("dist/assets/img/"))
 
-  return src("src/assets/img/**/*.{jpg,png,svg,gif,ico,webp}")
-    // .pipe(src("src/assets/img/**/*.{jpg,png,svg,gif,ico,webp}"))
-    .pipe(
-      imagemin({
-        progressive: true,
-        svgoPlugins: [{ removeViewBox: false }],
-        interlaced: true,
-        optimizationLevel: 3, // from 0 to 7
-      })
-    )
-    .pipe(dest("dist/assets/img"))
-    .pipe(browser_sync.stream());
+  return (
+    src(path.src.img)
+      // .pipe(src("src/assets/img/**/*.{jpg,png,svg,gif,ico,webp}"))
+      .pipe(
+        imagemin({
+          progressive: true,
+          svgoPlugins: [{ removeViewBox: false }],
+          interlaced: true,
+          optimizationLevel: 3, // from 0 to 7
+        })
+      )
+      .pipe(dest(path.build.img))
+      .pipe(browser_sync.stream())
+  );
 }
 
 gulp.task("sprite", function () {
@@ -120,10 +157,10 @@ gulp.task("sprite", function () {
 });
 
 function watchFiles() {
-  gulp.watch(["src/**/*.html"], html);
-  gulp.watch(["src/assets/scss/**/*.scss"], css);
-  gulp.watch(["src/assets/js/**/*.js"], js);
-  gulp.watch(["src/assets/img/**/*.{jpg,png,svg,gif,ico,webp}"]);
+  gulp.watch([path.watch.html], html);
+  gulp.watch([path.watch.css], css);
+  gulp.watch([path.watch.js], js);
+  gulp.watch([path.watch.img], images);
 }
 
 const build = gulp.series(clean, gulp.parallel(html, css, js, images));
